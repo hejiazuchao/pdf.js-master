@@ -374,7 +374,10 @@ class BaseViewer {
     firstPagePromise.then((pdfPage) => {
       let scale = this.currentScale;
       let viewport = pdfPage.getViewport(scale * CSS_UNITS);
-      for (let pageNum = 1; pageNum <= pagesCount; ++pageNum) {
+//    for (let pageNum = 1; pageNum <= pagesCount; ++pageNum) {
+	  //控制加载页数
+	  let totalPage=pdfDocument.transport._params.totalPage;
+	  for (let pageNum = 1; pageNum <= totalPage; ++pageNum) {
         let textLayerFactory = null;
         if (this.textLayerMode !== TextLayerMode.DISABLE) {
           textLayerFactory = this;
@@ -411,24 +414,24 @@ class BaseViewer {
           return;
         }
         let getPagesLeft = pagesCount;
-        for (let pageNum = 1; pageNum <= pagesCount; ++pageNum) {
-          pdfDocument.getPage(pageNum).then((pdfPage) => {
-            let pageView = this._pages[pageNum - 1];
-            if (!pageView.pdfPage) {
-              pageView.setPdfPage(pdfPage);
-            }
-            this.linkService.cachePageRef(pageNum, pdfPage.ref);
-            if (--getPagesLeft === 0) {
-              pagesCapability.resolve();
-            }
-          }, (reason) => {
-            console.error(`Unable to get page ${pageNum} to initialize viewer`,
-                          reason);
-            if (--getPagesLeft === 0) {
-              pagesCapability.resolve();
-            }
-          });
-        }
+//      for (let pageNum = 1; pageNum <= pagesCount; ++pageNum) {
+//        pdfDocument.getPage(pageNum).then((pdfPage) => {
+//          let pageView = this._pages[pageNum - 1];
+//          if (!pageView.pdfPage) {
+//            pageView.setPdfPage(pdfPage);
+//          }
+//          this.linkService.cachePageRef(pageNum, pdfPage.ref);
+//          if (--getPagesLeft === 0) {
+//            pagesCapability.resolve();
+//          }
+//        }, (reason) => {
+//          console.error(`Unable to get page ${pageNum} to initialize viewer`,
+//                        reason);
+//          if (--getPagesLeft === 0) {
+//            pagesCapability.resolve();
+//          }
+//        });
+//      }
       });
 
       this.eventBus.dispatch('pagesinit', { source: this, });

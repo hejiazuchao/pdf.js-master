@@ -106,7 +106,6 @@ var ChunkedStream = (function ChunkedStreamClosure() {
       if (chunk === this.lastSuccessfulEnsureByteChunk) {
         return;
       }
-
       if (!this.loadedChunks[chunk]) {
         throw new MissingDataException(pos, pos + 1);
       }
@@ -125,6 +124,7 @@ var ChunkedStream = (function ChunkedStreamClosure() {
       var chunkSize = this.chunkSize;
       var beginChunk = Math.floor(begin / chunkSize);
       var endChunk = Math.floor((end - 1) / chunkSize) + 1;
+      
       for (var chunk = beginChunk; chunk < endChunk; ++chunk) {
         if (!this.loadedChunks[chunk]) {
           throw new MissingDataException(begin, end);
@@ -340,7 +340,6 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
 
     _requestChunks: function ChunkedStreamManager_requestChunks(chunks) {
       var requestId = this.currRequestId++;
-
       var i, ii;
       var chunksNeeded = Object.create(null);
       this.chunksNeededByRequest[requestId] = chunksNeeded;
@@ -349,6 +348,7 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
           chunksNeeded[chunks[i]] = true;
         }
       }
+
 
       if (isEmptyObj(chunksNeeded)) {
         return Promise.resolve();
@@ -366,18 +366,15 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
         }
         this.requestsByChunk[chunk].push(requestId);
       }
-
       if (!chunksToRequest.length) {
         return capability.promise;
       }
-
       var groupedChunksToRequest = this.groupChunks(chunksToRequest);
-
       for (i = 0; i < groupedChunksToRequest.length; ++i) {
         var groupedChunk = groupedChunksToRequest[i];
-        var begin = groupedChunk.beginChunk * this.chunkSize;
-        var end = Math.min(groupedChunk.endChunk * this.chunkSize, this.length);
-        this.sendRequest(begin, end);
+	        var begin = groupedChunk.beginChunk * this.chunkSize;
+	        var end = Math.min(groupedChunk.endChunk * this.chunkSize, this.length);
+	        this.sendRequest(begin, end);
       }
 
       return capability.promise;
@@ -389,7 +386,6 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
 
     // Loads any chunks in the requested range that are not yet loaded
     requestRange: function ChunkedStreamManager_requestRange(begin, end) {
-
       end = Math.min(end, this.length);
 
       var beginChunk = this.getBeginChunk(begin);
@@ -399,7 +395,6 @@ var ChunkedStreamManager = (function ChunkedStreamManagerClosure() {
       for (var chunk = beginChunk; chunk < endChunk; ++chunk) {
         chunks.push(chunk);
       }
-
       return this._requestChunks(chunks);
     },
 

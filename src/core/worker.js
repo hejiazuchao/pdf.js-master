@@ -427,7 +427,6 @@ var WorkerMessageHandler = {
       var parseFailure = function parseFailure(e) {
         loadDocumentCapability.reject(e);
       };
-
       pdfManager.ensureDoc('checkHeader', []).then(function() {
         pdfManager.ensureDoc('parseStartXRef', []).then(function() {
           pdfManager.ensureDoc('parse', [recoveryMode]).then(

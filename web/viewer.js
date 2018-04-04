@@ -188,6 +188,22 @@ function webViewerLoad() {
       window.PDFViewerApplication = app.PDFViewerApplication;
       window.PDFViewerApplicationOptions = appOptions.AppOptions;
       app.PDFViewerApplication.run(config);
+      if(!app.PDFViewerApplication.isCopy){
+	      	document.oncontextmenu = function(){  
+		    		return false;   
+			}   
+			document.onkeydown = function(){   
+			    if (event.ctrlKey && window.event.keyCode==67){  
+			        return false;   
+			    }   
+			}   
+			document.body.oncopy = function (){   
+				return false;   
+			}   
+			document.onselectstart = function(){   
+				//return false;   
+			}   
+		}
     });
   } else {
     if (typeof PDFJSDev !== 'undefined' && PDFJSDev.test('CHROME')) {
@@ -206,3 +222,4 @@ if (document.readyState === 'interactive' ||
 } else {
   document.addEventListener('DOMContentLoaded', webViewerLoad, true);
 }
+

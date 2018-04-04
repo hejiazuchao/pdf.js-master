@@ -33,9 +33,24 @@ const defaultOptions = {
     value: 0,
     kind: OptionKind.VIEWER,
   },
+  isCopy:{
+  	/** @type {Boolean} */
+  	value:false,
+  	kind: OptionKind.VIEWER,
+  },
+  totalPage:{
+  	/** @type {number} */
+  	value: 10,
+    kind: OptionKind.VIEWER,
+  },
+  contentLength:{
+  	/** @type {number} */
+    value: 281714018,
+    kind: OptionKind.VIEWER,
+  },
   defaultUrl: {
     /** @type {string} */
-    value: 'compressed.tracemonkey-pldi-09.pdf',
+    value: '9787533753917.pdf',
     kind: OptionKind.VIEWER,
   },
   defaultZoomValue: {

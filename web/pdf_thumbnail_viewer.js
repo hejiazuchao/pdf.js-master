@@ -72,7 +72,7 @@ class PDFThumbnailViewer {
       return;
     }
     const thumbnailView = this._thumbnails[pageNumber - 1];
-
+    
     if (!thumbnailView) {
       console.error('scrollThumbnailIntoView: Invalid "pageNumber" parameter.');
       return;
@@ -167,7 +167,8 @@ class PDFThumbnailViewer {
     pdfDocument.getPage(1).then((firstPage) => {
       let pagesCount = pdfDocument.numPages;
       let viewport = firstPage.getViewport(1.0);
-      for (let pageNum = 1; pageNum <= pagesCount; ++pageNum) {
+      let totalPage = pdfDocument.transport._params.totalPage;
+      for (let pageNum = 1; pageNum <= totalPage; ++pageNum) {
         let thumbnail = new PDFThumbnailView({
           container: this.container,
           id: pageNum,

@@ -207,7 +207,7 @@ function setPDFNetworkStreamFactory(pdfNetworkStreamFactory) {
  */
 function getDocument(src) {
   var task = new PDFDocumentLoadingTask();
-
+	
   var source;
   if (typeof src === 'string') {
     source = { url: src, };
@@ -232,7 +232,6 @@ function getDocument(src) {
   var rangeTransport = null;
   let worker = null;
   let CMapReaderFactory = DOMCMapReaderFactory;
-	
   for (var key in source) {
     if (key === 'url' && typeof window !== 'undefined') {
       // The full path is required in the 'url' field.
@@ -342,6 +341,7 @@ function getDocument(src) {
       } else if (!params.data) {
         networkStream = createPDFNetworkStream({
           url: params.url,
+          contentLength:params.contentLength,
           length: params.length,
           httpHeaders: params.httpHeaders,
           withCredentials: params.withCredentials,
@@ -1740,7 +1740,7 @@ var WorkerTransport = (function WorkerTransportClosure() {
               }
             };
           }
-
+              //{isStreamingSupported:true,isRangeSupported:true,contentLength:281714018}
           headersCapability.resolve({
             isStreamingSupported: fullReader.isStreamingSupported,
             isRangeSupported: fullReader.isRangeSupported,
@@ -1750,12 +1750,11 @@ var WorkerTransport = (function WorkerTransportClosure() {
 
         return headersCapability.promise;
       }, this);
-
+	var index=0
       messageHandler.on('GetRangeReader', function(data, sink) {
         assert(this._networkStream);
         let _rangeReader =
           this._networkStream.getRangeReader(data.begin, data.end);
-
         sink.onPull = () => {
           _rangeReader.read().then(function({ value, done, }) {
             if (done) {

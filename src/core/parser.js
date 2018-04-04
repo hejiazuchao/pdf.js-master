@@ -86,7 +86,6 @@ var Parser = (function ParserClosure() {
     getObj: function Parser_getObj(cipherTransform) {
       var buf1 = this.buf1;
       this.shift();
-
       if (buf1 instanceof Cmd) {
         switch (buf1.cmd) {
           case 'BI': // inline image
@@ -118,7 +117,8 @@ var Parser = (function ParserClosure() {
               if (isEOF(this.buf1)) {
                 break;
               }
-              dict.set(key, this.getObj(cipherTransform));
+              var value=this.getObj(cipherTransform);
+              dict.set(key, value);
             }
             if (isEOF(this.buf1)) {
               if (!this.recoveryMode) {
@@ -158,7 +158,6 @@ var Parser = (function ParserClosure() {
         }
         return str;
       }
-
       // simple object
       return buf1;
     },

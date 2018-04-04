@@ -99,10 +99,10 @@ constructor(stream) {
         return response.headers.get(name);
       };
       
-
+	 
 	  this._isRangeSupported = true;
       // Setting right content length.
-	  this._contentLength =1016315;
+	  this._contentLength =source.contentLength;
 	 
 	  this._filename=null
 		 
@@ -242,7 +242,6 @@ class PDFFetchStreamRangeReader {
       }
       this._headers.append(property, value);
     }
-
     let rangeStr = begin + '-' + (end - 1);
     this._headers.append('Range', 'bytes=' + rangeStr);
     let url = source.url;

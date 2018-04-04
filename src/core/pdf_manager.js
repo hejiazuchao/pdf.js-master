@@ -174,7 +174,6 @@ var NetworkPdfManager = (function NetworkPdfManagerClosure() {
   Util.inherit(NetworkPdfManager, BasePdfManager, {
     ensure: function NetworkPdfManager_ensure(obj, prop, args) {
       var pdfManager = this;
-
       return new Promise(function (resolve, reject) {
         function ensureHelper() {
           try {
@@ -195,7 +194,6 @@ var NetworkPdfManager = (function NetworkPdfManagerClosure() {
               then(ensureHelper, reject);
           }
         }
-
         ensureHelper();
       });
     },

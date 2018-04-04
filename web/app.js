@@ -134,6 +134,7 @@ let PDFViewerApplication = {
   initialize(appConfig) {
     this.preferences = this.externalServices.createPreferences();
     this.appConfig = appConfig;
+    this.isCopy=AppOptions.get("isCopy");
 
     return this._readPreferences().then(() => {
       return this._parseHashParameters();
@@ -421,7 +422,6 @@ let PDFViewerApplication = {
           this.findBar.updateUIState(state, previous, matchCount);
         }
       };
-
       this.pdfViewer.setFindController(this.findController);
 
       // TODO: improve `PDFFindBar` constructor parameter passing
@@ -724,6 +724,7 @@ let PDFViewerApplication = {
                PDFJSDev.test('FIREFOX || MOZCENTRAL || CHROME')) {
       parameters.docBaseUrl = this.baseUrl;
     }
+               
     // Set the necessary API parameters, using the available options.
     const apiParameters = AppOptions.getAll('api');
     for (let key in apiParameters) {
@@ -744,15 +745,20 @@ let PDFViewerApplication = {
       appConfig.toolbar.download.setAttribute('hidden', 'true');
       appConfig.secondaryToolbar.downloadButton.setAttribute('hidden', 'true');
     }
-
+    //hexc
+	if(AppOptions.get("contentLength")){
+		parameters.contentLength=AppOptions.get("contentLength");
+	}
+	if(AppOptions.get("totalPage")){
+		parameters.totalPage=AppOptions.get("totalPage");
+	}
     let loadingTask = getDocument(parameters);//初始化参数完成
     this.pdfLoadingTask = loadingTask;
-
     loadingTask.onPassword = (updateCallback, reason) => {
       this.passwordPrompt.setUpdateCallback(updateCallback, reason);
       this.passwordPrompt.open();
     };
-
+    
     loadingTask.onProgress = ({ loaded, total, }) => {
       this.progress(loaded / total);
     };

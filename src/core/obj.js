@@ -470,7 +470,6 @@ var Catalog = (function CatalogClosure() {
       var nodesToVisit = [this.catDict.getRaw('Pages')];
       var count, currentPageIndex = 0;
       var xref = this.xref, pageKidsCountCache = this.pageKidsCountCache;
-
       function next() {
         while (nodesToVisit.length) {
           var currentNode = nodesToVisit.pop();
@@ -482,7 +481,6 @@ var Catalog = (function CatalogClosure() {
               currentPageIndex += count;
               continue;
             }
-
             xref.fetchAsync(currentNode).then(function (obj) {
               if (isDict(obj, 'Page') || (isDict(obj) && !obj.has('Kids'))) {
                 if (pageIndex === currentPageIndex) {
@@ -1523,7 +1521,7 @@ var XRef = (function XRefClosure() {
     },
 
     getCatalogObj: function XRef_getCatalogObj() {
-      return this.root;
+		 return this.root;
     },
   };
 
