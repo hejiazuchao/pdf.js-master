@@ -318,24 +318,25 @@ function PDFNetworkStreamFullRequestReader(manager, source) {
 
   var args = {
     onHeadersReceived: this._onHeadersReceived.bind(this),
-    onProgressiveData: source.disableStream ? null :
-                       this._onProgressiveData.bind(this),
+//  onProgressiveData: source.disableStream ? null :
+//                     this._onProgressiveData.bind(this),
     onDone: this._onDone.bind(this),
-    onError: this._onError.bind(this),
+//  onError: this._onError.bind(this),
     onProgress: this._onProgress.bind(this),
   };
   this._url = source.url;
-  this._fullRequestId = manager.requestFull(args);
+//this._fullRequestId = manager.requestFull(args);
+  this._fullRequestId = manager.requestRange(0,source.rangeChunkSize,args);
   this._headersReceivedCapability = createPromiseCapability();
   this._disableRange = source.disableRange || false;
-  this._contentLength = source.length; // optional
+  this._contentLength = source.contentLength;
   this._rangeChunkSize = source.rangeChunkSize;
   if (!this._rangeChunkSize && !this._disableRange) {
     this._disableRange = true;
   }
 
-  this._isStreamingSupported = false;
-  this._isRangeSupported = false;
+  this._isStreamingSupported = true;
+  this._isRangeSupported = true;
 
   this._cachedChunks = [];
   this._requests = [];
@@ -352,25 +353,25 @@ PDFNetworkStreamFullRequestReader.prototype = {
     var fullRequestXhrId = this._fullRequestId;
     var fullRequestXhr = this._manager.getRequestXhr(fullRequestXhrId);
 
-    const getResponseHeader = (name) => {
-      return fullRequestXhr.getResponseHeader(name);
-    };
-    let { allowRangeRequests, suggestedLength, } =
-      validateRangeRequestCapabilities({
-        getResponseHeader,
-        isHttp: this._manager.isHttp,
-        rangeChunkSize: this._rangeChunkSize,
-        disableRange: this._disableRange,
-      });
+//  const getResponseHeader = (name) => {
+//    return fullRequestXhr.getResponseHeader(name);
+//  };
+//  let { allowRangeRequests, suggestedLength, } =
+//    validateRangeRequestCapabilities({
+//      getResponseHeader,
+//      isHttp: this._manager.isHttp,
+//      rangeChunkSize: this._rangeChunkSize,
+//      disableRange: this._disableRange,
+//    });
 
-    if (allowRangeRequests) {
-      this._isRangeSupported = true;
-    }
+//  if (allowRangeRequests) {
+//    this._isRangeSupported = true;
+//  }
     // Setting right content length.
-    this._contentLength = suggestedLength || this._contentLength;
+//  this._contentLength = source.contentLength;
 
-    this._filename = extractFilenameFromHeader(getResponseHeader);
-
+//  this._filename = source.fileName;
+//
     var networkManager = this._manager;
     if (networkManager.isStreamingRequest(fullRequestXhrId)) {
       // We can continue fetching when progressive loading is enabled,
@@ -384,7 +385,6 @@ PDFNetworkStreamFullRequestReader.prototype = {
       // requests.
       networkManager.abortRequest(fullRequestXhrId);
     }
-
     this._headersReceivedCapability.resolve();
   },
 

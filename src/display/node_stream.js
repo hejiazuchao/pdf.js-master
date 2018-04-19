@@ -105,7 +105,7 @@ class BaseFullReader {
     }
 
     this._isStreamingSupported = !source.disableStream;
-    this._isRangeSupported = !source.disableRange;
+    this._isRangeSupported = true;
 
     this._readableStream = null;
     this._readCapability = createPromiseCapability();

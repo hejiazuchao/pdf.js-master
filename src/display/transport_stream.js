@@ -29,7 +29,7 @@ var PDFDataTransportStream = (function PDFDataTransportStreamClosure() {
 
     this._pdfDataRangeTransport = pdfDataRangeTransport;
     this._isStreamingSupported = !params.disableStream;
-    this._isRangeSupported = !params.disableRange;
+    this._isRangeSupported = true;
     this._contentLength = params.length;
 
     this._fullRequestReader = null;

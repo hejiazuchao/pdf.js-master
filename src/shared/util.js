@@ -1243,7 +1243,6 @@ function MessageHandler(sourceName, targetName, comObj) {
   this.streamControllers = Object.create(null);
   let callbacksCapabilities = this.callbacksCapabilities = Object.create(null);
   let ah = this.actionHandler = Object.create(null);
-
   this._onComObjOnMessage = (event) => {
     let data = event.data;
     if (data.targetName !== this.sourceName) {

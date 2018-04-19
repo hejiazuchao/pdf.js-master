@@ -132,9 +132,50 @@ let PDFViewerApplication = {
 
   // Called once when the document is loaded.
   initialize(appConfig) {
+  	//hexc
+  	//hexc获取文件信息权限信息
+    let infoUrl=AppOptions.get("getInfoUrl");
+    let token=window.sessionStorage.getItem("token")||"";
+    let queryString = document.location.search.slice(1);
+    let m = /(^|&)resource=([^&]*)/.exec(queryString);
+    let id=m ? decodeURIComponent(m[2]) : '';
+    AppOptions.set("resourceID",id);
+    let n = /(^|&)name=([^&]*)/.exec(queryString);
+    let name=n ? decodeURIComponent(n[2]) : '';
+    AppOptions.set("fileName",name);
+    let success=(res)=>{
+    		AppOptions.set("totalPage",res.assignedPage);
+		AppOptions.set("contentLength",res.fileSize);
+		AppOptions.set("downloadable",res.downloadable);
+		AppOptions.set("printable",res.printable);
+    }
+    if(window.fetch){
+	    fetch(infoUrl+"/meta/"+id,{
+	    		headers:{
+	    			Authorization:token
+	    		}
+	    }).then(function(res){ return res.json()})
+	    .then(function(res){
+	    		if(res.stutas=="200"){
+	    			success(res)
+	    		}
+	    })
+    }else{
+    		var ajax = new XMLHttpRequest();
+    		ajax.open('get',infoUrl+"/meta/"+id);
+    		ajax.send();
+    		ajax.onreadystatechange = function () {
+	   if (ajax.readyState==4 &&ajax.status==200) {
+	　　　　		success(ajax.responseText)
+	  　　}
+	   }
+    }
+  	//end
     this.preferences = this.externalServices.createPreferences();
     this.appConfig = appConfig;
     this.isCopy=AppOptions.get("isCopy");
+    this.downloadable=AppOptions.get("downloadable");
+    this.printable=AppOptions.get("printable");
 
     return this._readPreferences().then(() => {
       return this._parseHashParameters();
@@ -147,7 +188,6 @@ let PDFViewerApplication = {
       // initialized, to prevent errors if an event arrives too soon.
       this.bindEvents();
       this.bindWindowEvents();
-
       // We can start UI localization now.
       let appContainer = appConfig.appContainer || document.documentElement;
       this.l10n.translate(appContainer).then(() => {
@@ -614,6 +654,9 @@ let PDFViewerApplication = {
   },
 
   setTitleUsingUrl(url) {
+  	let queryString = document.location.search.slice(1);
+	let n=/(^|&)name=([^&]*)/.exec(queryString);
+	url=n ? decodeURIComponent(n[2]) : '';
     this.url = url;
     this.baseUrl = url.split('#')[0];
     let title = getPDFFileNameFromURL(url, '');
@@ -745,9 +788,12 @@ let PDFViewerApplication = {
       appConfig.toolbar.download.setAttribute('hidden', 'true');
       appConfig.secondaryToolbar.downloadButton.setAttribute('hidden', 'true');
     }
-    //hexc
+//hexc    
 	if(AppOptions.get("contentLength")){
 		parameters.contentLength=AppOptions.get("contentLength");
+	}
+	if(AppOptions.get("totalPage")){
+		parameters.totalPage=AppOptions.get("totalPage");
 	}
 	if(AppOptions.get("totalPage")){
 		parameters.totalPage=AppOptions.get("totalPage");
@@ -800,6 +846,7 @@ let PDFViewerApplication = {
 
   download() {
     function downloadByUrl() {
+    let url=AppOptions.get("getInfoUrl")+"/download/"+AppOptions.get("resourceID")
       downloadManager.downloadUrl(url, filename);
     }
 
@@ -817,15 +864,16 @@ let PDFViewerApplication = {
 
     // When the PDF document isn't ready, or the PDF file is still downloading,
     // simply download using the URL.
-    if (!this.pdfDocument || !this.downloadComplete) {
+//  if (!this.pdfDocument || !this.downloadComplete) {
       downloadByUrl();
       return;
-    }
+//  }
 
-    this.pdfDocument.getData().then(function(data) {
-      let blob = createBlob(data, 'application/pdf');
-      downloadManager.download(blob, url, filename);
-    }).catch(downloadByUrl); // Error occurred, try downloading with the URL.
+//  this.pdfDocument.getData().then(function(data) {
+//    let blob = createBlob(data, 'application/pdf');
+//    downloadManager.download(blob, url, filename);
+//  }).catch(downloadByUrl); // Error occurred, try downloading with the URL.
+	 
   },
 
   fallback(featureId) {
@@ -1303,7 +1351,6 @@ let PDFViewerApplication = {
       });
       return;
     }
-
     // The beforePrint is a sync method and we need to know layout before
     // returning from this method. Ensure that we can get sizes of the pages.
     if (!this.pdfViewer.pageViewsReady) {

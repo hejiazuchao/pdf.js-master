@@ -15,6 +15,7 @@
 
 import { createPromiseCapability } from 'pdfjs-lib';
 import { scrollIntoView } from './ui_utils';
+import { AppOptions } from './app_options';
 
 const FindState = {
   FOUND: 0,
@@ -80,7 +81,7 @@ class PDFFindController {
     this.state = null;
     this.dirtyMatch = false;
     this.findTimeout = null;
-
+    	
     this._firstPagePromise = new Promise((resolve) => {
       this.resolveFirstPage = resolve;
     });
@@ -101,9 +102,11 @@ class PDFFindController {
         // Trigger the find action with a small delay to avoid starting the
         // search when the user is still typing (saving resources).
         this.findTimeout = setTimeout(this._nextMatch.bind(this), FIND_TIMEOUT);
+        
       } else {
         this._nextMatch();
       }
+      
     });
   }
 
@@ -334,7 +337,6 @@ class PDFFindController {
       this.pageMatches = [];
       this.matchCount = 0;
       this.pageMatchesLength = null;
-
       for (let i = 0; i < numPages; i++) {
         // Wipe out any previously highlighted matches.
         this._updatePage(i);
@@ -345,11 +347,41 @@ class PDFFindController {
           this.extractTextPromises[i].then((pageIdx) => {
             delete this.pendingFindMatches[pageIdx];
             this._calculateMatch(pageIdx);
+            //hexc update
+            if(i==numPages-1&&typeof AppOptions.get("totalPage")=="number"){
+	        		var that=this;
+	        		let url=AppOptions.get("getInfoUrl")+"/occurrence/"+AppOptions.get("soureceID")+"?keyword="+this.state.query;
+	        		var token=window.sessionStorage.getItem("token");
+	        		let success=(reb)=>{
+	        			  that.matchCount = reb.count;
+				      that._updateUIResultsCount();
+				      clearTimeout(that.findTimeout);
+					  that._nextPageMatch();
+	        		}
+	        		if(window.fetch){
+		        		fetch(url,{headers:{Authorization:token}})
+		        		.then(function(res){return res.json()})
+		        		.then(function(reb){
+		        			if(reb.stutas==200){
+			        			  success(reb);
+						  }
+		        		})
+		        	}else{
+		        		var ajax = new XMLHttpRequest();
+				    		ajax.open('get',url);
+				    		ajax.send();
+				    		ajax.onreadystatechange = function () {
+						   if (ajax.readyState==4 &&ajax.status==200) {
+						　　　　		success(ajax.responseText)
+						  　}
+					   }
+		        	}
+	        }
           });
         }
       }
     }
-
+	var that=this;
     // If there's no query there's no point in searching.
     if (this.state.query === '') {
       this._updateUIState(FindState.FOUND);

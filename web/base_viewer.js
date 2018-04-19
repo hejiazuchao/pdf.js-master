@@ -295,7 +295,6 @@ class BaseViewer {
     this._pagesRotation = rotation;
 
     let pageNumber = this._currentPageNumber;
-
     for (let i = 0, ii = this._pages.length; i < ii; i++) {
       let pageView = this._pages[i];
       pageView.update(pageView.scale, rotation);
@@ -338,14 +337,14 @@ class BaseViewer {
 
     let pagesCapability = createPromiseCapability();
     this.pagesPromise = pagesCapability.promise;
-
-    pagesCapability.promise.then(() => {
+    
+//  pagesCapability.promise.then(() => {
       this._pageViewsReady = true;
       this.eventBus.dispatch('pagesloaded', {
         source: this,
         pagesCount,
       });
-    });
+//  });
 
     let isOnePageRenderedResolved = false;
     let onePageRenderedCapability = createPromiseCapability();
@@ -376,7 +375,7 @@ class BaseViewer {
       let viewport = pdfPage.getViewport(scale * CSS_UNITS);
 //    for (let pageNum = 1; pageNum <= pagesCount; ++pageNum) {
 	  //控制加载页数
-	  let totalPage=pdfDocument.transport._params.totalPage;
+	  let totalPage=pdfDocument.transport._params.totalPage||pagesCount;
 	  for (let pageNum = 1; pageNum <= totalPage; ++pageNum) {
         let textLayerFactory = null;
         if (this.textLayerMode !== TextLayerMode.DISABLE) {
@@ -413,25 +412,26 @@ class BaseViewer {
           pagesCapability.resolve();
           return;
         }
+        pagesCount=pdfDocument.transport._params.totalPage||pagesCount;
         let getPagesLeft = pagesCount;
-//      for (let pageNum = 1; pageNum <= pagesCount; ++pageNum) {
-//        pdfDocument.getPage(pageNum).then((pdfPage) => {
-//          let pageView = this._pages[pageNum - 1];
-//          if (!pageView.pdfPage) {
-//            pageView.setPdfPage(pdfPage);
-//          }
-//          this.linkService.cachePageRef(pageNum, pdfPage.ref);
-//          if (--getPagesLeft === 0) {
-//            pagesCapability.resolve();
-//          }
-//        }, (reason) => {
-//          console.error(`Unable to get page ${pageNum} to initialize viewer`,
-//                        reason);
-//          if (--getPagesLeft === 0) {
-//            pagesCapability.resolve();
-//          }
-//        });
-//      }
+        for (let pageNum = 1; pageNum <= pagesCount; ++pageNum) {
+          pdfDocument.getPage(pageNum).then((pdfPage) => {
+            let pageView = this._pages[pageNum - 1];
+            if (!pageView.pdfPage) {
+              pageView.setPdfPage(pdfPage);
+            }
+            this.linkService.cachePageRef(pageNum, pdfPage.ref);
+            if (--getPagesLeft === 0) {
+              pagesCapability.resolve();
+            }
+          }, (reason) => {
+            console.error(`Unable to get page ${pageNum} to initialize viewer`,
+                          reason);
+            if (--getPagesLeft === 0) {
+              pagesCapability.resolve();
+            }
+          });
+        }
       });
 
       this.eventBus.dispatch('pagesinit', { source: this, });
@@ -439,7 +439,6 @@ class BaseViewer {
       if (this.defaultRenderingQueue) {
         this.update();
       }
-
       if (this.findController) {
         this.findController.resolveFirstPage();
       }
@@ -632,7 +631,6 @@ class BaseViewer {
       this._setCurrentPageNumber(pageNumber, /* resetCurrentPageView = */ true);
       return;
     }
-
     let pageView = this._pages[pageNumber - 1];
     if (!pageView) {
       console.error(

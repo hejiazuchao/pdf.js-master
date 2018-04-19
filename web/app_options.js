@@ -33,6 +33,21 @@ const defaultOptions = {
     value: 0,
     kind: OptionKind.VIEWER,
   },
+  resourceID:{
+  	/** @type {string} */
+  	value: "",
+    kind: OptionKind.VIEWER,
+  },
+  downloadable:{
+  	/** @type {Boolean} */
+  	value:false,
+  	kind: OptionKind.VIEWER,
+  },
+  printable:{
+  	/** @type {Boolean} */
+  	value:false,
+  	kind: OptionKind.VIEWER,
+  },
   isCopy:{
   	/** @type {Boolean} */
   	value:false,
@@ -43,9 +58,19 @@ const defaultOptions = {
   	value: 10,
     kind: OptionKind.VIEWER,
   },
+  fileName:{
+  	/** @type {string} */
+  	value: "",
+    kind: OptionKind.VIEWER,
+  },
   contentLength:{
   	/** @type {number} */
     value: 281714018,
+    kind: OptionKind.VIEWER,
+  },
+  getInfoUrl:{
+  	 /** @type {string} */
+    value: '/reader/pdf',
     kind: OptionKind.VIEWER,
   },
   defaultUrl: {

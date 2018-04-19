@@ -80,7 +80,7 @@ constructor(stream) {
       this._disableRange = true;
     }
 
-    this._isStreamingSupported = !source.disableStream;
+    this._isStreamingSupported = true;
     this._isRangeSupported = !source.disableRange;
 
     this._headers = new Headers();
@@ -93,18 +93,18 @@ constructor(stream) {
     }
 
     let url = source.url;
+    
       this._headersCapability.resolve();
 
       const getResponseHeader = (name) => {
         return response.headers.get(name);
       };
-      
 	 
 	  this._isRangeSupported = true;
       // Setting right content length.
 	  this._contentLength =source.contentLength;
 	 
-	  this._filename=null
+	  this._filename=source.fileName;
 		 
       // We need to stop reading when range is supported and streaming is
       // disabled.
@@ -232,7 +232,8 @@ class PDFFetchStreamRangeReader {
     let source = stream.source;
     this._withCredentials = source.withCredentials;
     this._readCapability = createPromiseCapability();
-    this._isStreamingSupported = !source.disableStream;
+//  this._isStreamingSupported = !source.disableStream;
+	this._isStreamingSupported = true;
 
     this._headers = new Headers();
     for (let property in this._stream.httpHeaders) {
@@ -244,6 +245,8 @@ class PDFFetchStreamRangeReader {
     }
     let rangeStr = begin + '-' + (end - 1);
     this._headers.append('Range', 'bytes=' + rangeStr);
+    let token=window.sessionStorage.getItem("token")||"";
+    this._headers.append("Authorization",token);
     let url = source.url;
     fetch(url, createFetchOptions(this._headers, this._withCredentials)).
         then((response) => {

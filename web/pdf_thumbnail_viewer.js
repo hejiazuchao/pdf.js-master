@@ -167,7 +167,7 @@ class PDFThumbnailViewer {
     pdfDocument.getPage(1).then((firstPage) => {
       let pagesCount = pdfDocument.numPages;
       let viewport = firstPage.getViewport(1.0);
-      let totalPage = pdfDocument.transport._params.totalPage;
+      let totalPage = pdfDocument.transport._params.totalPage||pagesCount;
       for (let pageNum = 1; pageNum <= totalPage; ++pageNum) {
         let thumbnail = new PDFThumbnailView({
           container: this.container,

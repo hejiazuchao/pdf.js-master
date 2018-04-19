@@ -49,11 +49,12 @@ class PDFFindBar {
     this.toggleButton.addEventListener('click', () => {
       this.toggle();
     });
-
-    this.findField.addEventListener('input', () => {
-      this.dispatchEvent('');
-    });
-
+//  this.findField.addEventListener('input', ()=>{
+//    this.dispatchEvent('');
+//  });
+	this.findField.addEventListener('keyup',()=>{
+		this.dispatchEvent('');
+	})
     this.bar.addEventListener('keydown', (e) => {
       switch (e.keyCode) {
         case 13: // Enter
@@ -150,7 +151,6 @@ class PDFFindBar {
     if (!this.findResultsCount) {
       return; // No UI control is provided.
     }
-
     if (!matchCount) {
       // If there are no matches, hide and reset the counter.
       this.findResultsCount.classList.add('hidden');

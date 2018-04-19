@@ -1626,7 +1626,6 @@ var WorkerTransport = (function WorkerTransportClosure() {
       baseUrl: params.cMapUrl,
       isCompressed: params.cMapPacked,
     });
-
     this.destroyed = false;
     this.destroyCapability = null;
     this._passwordCapability = null;
